@@ -8,6 +8,7 @@ jobs:
     uses: ./.github/workflows/workflow_call_list.yaml
     permissions:
       contents: read
+      pull-requests: read
 
   plan:
     name: plan (${{ matrix.target.target }})
