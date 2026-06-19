@@ -1,0 +1,45 @@
+name: test
+
+on:
+  pull_request:
+
+jobs:
+  plan:
+    timeout-minutes: 30
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    env:
+      TFACTION_JOB_TYPE: terraform
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Create GitHub App installation access token
+        id: token
+        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
+
+      - name: Set up tfaction
+        uses: suzuki-shunsuke/tfaction@v2.0.3
+        with:
+          action: setup
+          github_token: ${{ steps.token.outputs.token }}
+
+      - name: Terraform init
+        uses: suzuki-shunsuke/tfaction@v2.0.3
+        with:
+          action: terraform-init
+          github_token: ${{ steps.token.outputs.token }}
+
+      - name: Terraform plan
+        uses: suzuki-shunsuke/tfaction@v2.0.3
+        with:
+          action: plan
+          github_token: ${{ steps.token.outputs.token }}
