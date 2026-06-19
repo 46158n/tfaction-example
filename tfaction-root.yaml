@@ -4,4 +4,4 @@ available_providers:
   - name: registry.terraform.io/hashicorp/null
 
 target_groups:
-  - working_directory: ""
+  - working_directory: terraform/sample
