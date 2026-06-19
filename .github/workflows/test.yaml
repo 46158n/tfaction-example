@@ -4,13 +4,29 @@ on:
   pull_request:
 
 jobs:
+  list:
+    uses: ./.github/workflows/workflow_call_list.yaml
+    permissions:
+      contents: read
+      pull-requests: read
+
   plan:
+    name: plan (${{ matrix.target.target }})
     timeout-minutes: 30
     runs-on: ubuntu-24.04
+    needs:
+      - list
     permissions:
       contents: read
     env:
-      TFACTION_JOB_TYPE: terraform
+      TFACTION_TARGET: ${{ matrix.target.target }}
+      TFACTION_WORKING_DIR: ${{ matrix.target.working_directory }}
+      TFACTION_JOB_TYPE: ${{ matrix.target.job_type }}
+    if: join(fromJSON(needs.list.outputs.targets), '') != ''
+    strategy:
+      fail-fast: false
+      matrix:
+        target: ${{ fromJSON(needs.list.outputs.targets) }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2

@@ -9,6 +9,7 @@ terraform {
   }
 }
 
+
 resource "null_resource" "example" {
   triggers = {
     message = "managed by tfaction"
